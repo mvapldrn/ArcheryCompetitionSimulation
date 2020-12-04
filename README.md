@@ -1,6 +1,7 @@
 # ArcheryCompetitionSimulation
 Can be used to simulated archery competitions in existing and non-existing formats to get insight in their statistics, like win/lose statistics, tie-statistics etc.
 
+```
 Archery statistical simulator from Marcel van Apeldoorn (mvapldrn@gmail.com)
 
 Usage: archerystats [option (<value>)]
@@ -161,3 +162,4 @@ Generic options
 --pretty-print                     Pretty print the results (default is CSV print of results)
 
 --help                             This help file
+```
