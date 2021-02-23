@@ -362,7 +362,7 @@ static void help() /*{{{2*/
     printf("--distance=<distance>              Shooting distance in [m]\n");
     printf("--target-face=<face-code>          Target face code\n");
     printf("--n-arrows-qualification=<n>       Number fo arrows to shoot in qualification\n");
-    printf("--n-arrows-eliminations=<n>        Number fo arrows to shoot in elimination\n");
+    printf("--n-arrows-elimination=<n>        Number fo arrows to shoot in elimination\n");
     printf("--best-of-sets=<n-sets>            Best of <n-sets> sets\n");
     printf("--format-name-qualification=<name> Name of qualification format (for logging)\n");
     printf("--format-name-elimination=<name>   Name of elimination format (for logging)\n");

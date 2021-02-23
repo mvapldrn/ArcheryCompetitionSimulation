@@ -125,8 +125,8 @@ void dumpArcher(const Archer *archer) /*{{{2*/
         outp("|        %3d(%3d)    | %c |       %3d        |       %6.2lf        |        %6.1lf             |      %6.1lf     | %6.3lf(%4.1lf%%)  |\n",
                archer->q_rank, archer->lvl_rank,
                winSymbol(archer),
-               archer->e_rank, archer->lvl, archer->lvl_score, archer->q_score, archer->q_score_stat.stdev,
-               100.0*(sqrt(archer->q_score_stat.stdev)/archer->q_score));
+               archer->e_rank, archer->lvl, archer->lvl_score, archer->q_score_stat.avg, archer->q_score_stat.stdev,
+               100.0*(sqrt(archer->q_score_stat.stdev)/(archer->q_score_stat.avg)));
     }
     else {
         outp("%d;%d;\"%c\";%d;%lf;%lf;%lf;%lf\n",
@@ -187,7 +187,7 @@ void rankArchersOnQualifyingScore(int from_rank, int to_rank) /*{{{2*/
 
     for (int i = start_idx; i <= end_idx; i++) {
         int max_idx = i;
-        int max_q_score = archerrank[max_idx]->q_score;
+        double max_q_score = archerrank[max_idx]->q_score;
         for (int j = i+1; j <= end_idx; j++) {
             if (archerrank[j]->q_score > max_q_score) {
                 max_idx = j;

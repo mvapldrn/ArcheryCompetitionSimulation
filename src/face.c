@@ -72,7 +72,7 @@ static void faceInit(void) /*{{{2*/
     f->value[8]  = 9.0;
     f->value[9]  = 10.0;
     f->significant_decimals = 0;
-    f->ring_for_2nd_so = 9;
+    f->ring_for_2nd_so = -1;
 
     /*
      * Official World archery 80cm target face

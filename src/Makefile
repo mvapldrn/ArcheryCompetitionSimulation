@@ -1,7 +1,7 @@
 # When using the GNU Scientific Library, set -DWITH_GSL and link with the libgsl.a
 # For populations, choose
 # ASL_RM, ASL_RW, ASL_CM_INDOOR, ASL_CM_OUTDOOR, ASL_CW_INDOOR
-DEFINES		= -DWITH_GSL -DASL_CM_OUTDOOR
+DEFINES		= -DWITH_GSL -DASL_RM
 OPTIONS		= -O2 -Wno-unused-result
 #OPTIONS		= -g
 CFLAGS		= $(OPTIONS) $(DEFINES)

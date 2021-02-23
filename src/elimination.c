@@ -934,6 +934,8 @@ void computeEliminationStats(void) /*{{{2*/
 
     double lasl;
     double rasl;
+    int n;
+    double p, q, k, var;
     Counters counters = {0};
 
     initEliminationStats();
@@ -941,33 +943,44 @@ void computeEliminationStats(void) /*{{{2*/
     if (pretty_print) {
         outp("Format: %s\n", getFormatName(&e_format));
         outp("N     : %d\n", e_nruns);
-        /* Header */
         outp("Archers Skill Level\n");
-        outp("       ");
+        /* Header */
+        outp("               ");
         for (rasl = start_asl; rasl <= end_asl; rasl += step_asl) {
-            outp("|  %5.1lf  ", rasl);
+            outp("|    %5.1lf    ", rasl);
         }
-        outp("|\n-------");
+        outp("+\n");
+        /* Header with Equiv score (72 arrows score) */
+        outp("               ");
         for (rasl = start_asl; rasl <= end_asl; rasl += step_asl) {
-            outp("+---------");
+            outp("|    %5.1lf    ", getScoreBySkillLevel(rasl, face, e_format.distance, 72));
+        }
+        outp("|\n---------------");
+        for (rasl = start_asl; rasl <= end_asl; rasl += step_asl) {
+            outp("+-------------");
         }
         outp("+\n");
     }
     else {
-        outp("\"%s\"\n%d\n", getFormatName(&e_format), e_nruns);
-        /* Header */
+        outp("%s\n%d\n;", getFormatName(&e_format), e_nruns);
+        /* Header with ASL */
         for (rasl = start_asl; rasl <= end_asl; rasl += step_asl) {
-            outp(";%lf", rasl);
+            outp(";;%lf;", rasl);
+        }
+        outp("\n;");
+        /* Header with Equiv score (72 arrows score) */
+        for (rasl = start_asl; rasl <= end_asl; rasl += step_asl) {
+            outp(";;%lf;", getScoreBySkillLevel(rasl, face, e_format.distance, 72));
         }
         outp("\n");
     }
     for (lasl = start_asl; lasl <= end_asl; lasl += step_asl) {
         setArcher(&left, 0, lasl);
         if (pretty_print) {
-            outp(" %5.1lf ", left.lvl);
+            outp(" %5.1lf (=%5.1lf)", left.lvl, getScoreBySkillLevel(left.lvl, face, e_format.distance, 72));
         }
         else {
-            outp("%lf", left.lvl);
+            outp("%lf;%lf", left.lvl, getScoreBySkillLevel(left.lvl, face, e_format.distance, 72));
         }
         for (rasl = start_asl; rasl <= end_asl; rasl += step_asl) {
             int i;
@@ -984,11 +997,27 @@ void computeEliminationStats(void) /*{{{2*/
                 }
             }
 
+            /*
+             * If we have a binary test with n trails and k successes, the estimate of success is:
+             *
+             * (k*1 + (n-k)*0) / n = k/n = p
+             *
+             * The variance is (k*q^2 + (n-k)*p^2)/n
+             * Where q = 1-p
+             *
+             * The variance describes how much a variable differs from its expected value
+             */
+            k = left_wins;
+            n = e_nruns;
+            p = k / n;
+            q = 1.0-p;
+            var = (k*q*q + (n-k)*p*p)/n;
+
             if (pretty_print) {
-                outp("| %6.2lf%% ", 100.0*left_wins/e_nruns);
+                outp("| %5.1lf%% %4.1lf%%", 100.0*p, 100.0*var);
             }
             else {
-                outp(";%lf", 1.0*left_wins/e_nruns);
+                outp(";%lf;%lf;%lf", p-var, p, p+var);
             }
         }
         if (pretty_print) {
@@ -1310,6 +1339,9 @@ void dumpEliminationStats() /*{{{2*/
 {
     Face *f;
     int i;
+    double sum;
+
+    if (pretty_print) {
 
     outp("Qualification: %s\n", getFormatName(&q_format));
     outp("Elimination  : %s\n", getFormatName(&e_format));
@@ -1317,21 +1349,29 @@ void dumpEliminationStats() /*{{{2*/
             asl1, asl4, asl8, asl16, asl32, asl56, asl104, name_of_population);
 
     outp("\n           Elimination round statistics\n");
-    outp("=============================================================================================\n");
-    outp("|                            |  1/48  |  1/24  |  1/16  |   1/8  |   1/4  |   1/2  |  FG+FB |\n");
-    outp("+----------------------------+--------+--------+--------+--------+--------+--------+--------+\n");
+    outp("===============================================================================================================================\n");
+    outp("|                            |   1/48   |   1/24   |   1/16   |    1/8   |    1/4   |    1/2   |   FG+FB  |   total n-matches |\n");
+    outp("+----------------------------+----------+----------+----------+----------+----------+----------+----------+-------------------+\n");
 
-    outp("| # total simulated matches  | %6ld | %6ld | %6ld | %6ld | %6ld | %6ld | %6ld |\n",
+    outp("| # total simulated matches  | %8ld | %8ld | %8ld | %8ld | %8ld | %8ld | %8ld |    %8ld       |\n",
                elimstats.n_matches[F48TH],
                elimstats.n_matches[F24TH],
                elimstats.n_matches[F16TH],
                elimstats.n_matches[F8TH],
                elimstats.n_matches[F4TH],
                elimstats.n_matches[FSEMI],
-               elimstats.n_matches[FGOLD]);
+               elimstats.n_matches[FGOLD],
+               104);
     if (e_format.best_of > 0) {
         for (i = 0; i < e_format.best_of; i++) {
-            outp("| # avg wins after %2d sets   | %5.1lf%% | %5.1lf%% | %5.1lf%% | %5.1lf%% | %5.1lf%% | %5.1lf%% | %5.1lf%% |\n",
+            sum = (elimstats.n_win_after_sets[i][F48TH].avg +
+                   elimstats.n_win_after_sets[i][F24TH].avg +
+                   elimstats.n_win_after_sets[i][F16TH].avg +
+                   elimstats.n_win_after_sets[i][F8TH].avg +
+                   elimstats.n_win_after_sets[i][F4TH].avg +
+                   elimstats.n_win_after_sets[i][FSEMI].avg +
+                   elimstats.n_win_after_sets[i][FGOLD].avg );
+            outp("| # avg wins after %2d sets   | %7.2lf%% | %7.2lf%% | %7.2lf%% | %7.2lf%% | %7.2lf%% | %7.2lf%% | %7.2lf%% | %7.2lf %7.2lf%%  |\n",
                    i+1,
                    100.0*elimstats.n_win_after_sets[i][F48TH].avg/48.0,
                    100.0*elimstats.n_win_after_sets[i][F24TH].avg/24.0,
@@ -1339,44 +1379,77 @@ void dumpEliminationStats() /*{{{2*/
                    100.0*elimstats.n_win_after_sets[i][F8TH].avg/8.0,
                    100.0*elimstats.n_win_after_sets[i][F4TH].avg/4.0,
                    100.0*elimstats.n_win_after_sets[i][FSEMI].avg/2.0,
-                   100.0*elimstats.n_win_after_sets[i][FGOLD].avg/2.0);
+                   100.0*elimstats.n_win_after_sets[i][FGOLD].avg/2.0,
+                   sum, 100.0*sum/104.0);
         }
     }
-    outp("| # avg wins after S/O       |  %5.1lf |  %5.1lf |  %5.1lf |  %5.1lf |  %5.1lf |  %5.1lf |  %5.1lf |\n",
+    sum = (elimstats.n_win_after_shootoff[F48TH].avg +
+           elimstats.n_win_after_shootoff[F24TH].avg +
+           elimstats.n_win_after_shootoff[F16TH].avg +
+           elimstats.n_win_after_shootoff[F8TH].avg +
+           elimstats.n_win_after_shootoff[F4TH].avg +
+           elimstats.n_win_after_shootoff[FSEMI].avg +
+           elimstats.n_win_after_shootoff[FGOLD].avg );
+    outp("| # avg wins after S/O       |  %7.2lf |  %7.2lf |  %7.2lf |  %7.2lf |  %7.2lf |  %7.2lf |  %7.2lf | %7.2lf %7.2lf%%  |\n",
                elimstats.n_win_after_shootoff[F48TH].avg,
                elimstats.n_win_after_shootoff[F24TH].avg,
                elimstats.n_win_after_shootoff[F16TH].avg,
                elimstats.n_win_after_shootoff[F8TH].avg,
                elimstats.n_win_after_shootoff[F4TH].avg,
                elimstats.n_win_after_shootoff[FSEMI].avg,
-               elimstats.n_win_after_shootoff[FGOLD].avg);
-    outp("| # avg wins after D-S/O     |  %5.1lf |  %5.1lf |  %5.1lf |  %5.1lf |  %5.1lf |  %5.1lf |  %5.1lf |\n",
+               elimstats.n_win_after_shootoff[FGOLD].avg,
+               sum, 100.0*sum/104.0);
+    sum = (elimstats.n_second_shootoff_required[F48TH].avg +
+           elimstats.n_second_shootoff_required[F24TH].avg +
+           elimstats.n_second_shootoff_required[F16TH].avg +
+           elimstats.n_second_shootoff_required[F8TH].avg +
+           elimstats.n_second_shootoff_required[F4TH].avg +
+           elimstats.n_second_shootoff_required[FSEMI].avg +
+           elimstats.n_second_shootoff_required[FGOLD].avg );
+    outp("| # avg wins after D-S/O     |  %7.2lf |  %7.2lf |  %7.2lf |  %7.2lf |  %7.2lf |  %7.2lf |  %7.2lf | %7.2lf %7.2lf%%  |\n",
                elimstats.n_second_shootoff_required[F48TH].avg,
                elimstats.n_second_shootoff_required[F24TH].avg,
                elimstats.n_second_shootoff_required[F16TH].avg,
                elimstats.n_second_shootoff_required[F8TH].avg,
                elimstats.n_second_shootoff_required[F4TH].avg,
                elimstats.n_second_shootoff_required[FSEMI].avg,
-               elimstats.n_second_shootoff_required[FGOLD].avg);
+               elimstats.n_second_shootoff_required[FGOLD].avg,
+               sum, 100.0*sum/104.0);
     if (e_format.best_of > 0) {
-        outp("| # avg wins equal score !S/O|  %5.1lf |  %5.1lf |  %5.1lf |  %5.1lf |  %5.1lf |  %5.1lf |  %5.1lf |\n",
+        sum = (elimstats.n_win_with_equal_score_no_so[F48TH].avg +
+               elimstats.n_win_with_equal_score_no_so[F24TH].avg +
+               elimstats.n_win_with_equal_score_no_so[F16TH].avg +
+               elimstats.n_win_with_equal_score_no_so[F8TH].avg +
+               elimstats.n_win_with_equal_score_no_so[F4TH].avg +
+               elimstats.n_win_with_equal_score_no_so[FSEMI].avg +
+               elimstats.n_win_with_equal_score_no_so[FGOLD].avg );
+        outp("| # avg wins equal score !S/O|  %7.2lf |  %7.2lf |  %7.2lf |  %7.2lf |  %7.2lf |  %7.2lf |  %7.2lf | %7.2lf %7.2lf%%  |\n",
                    elimstats.n_win_with_equal_score_no_so[F48TH].avg,
                    elimstats.n_win_with_equal_score_no_so[F24TH].avg,
                    elimstats.n_win_with_equal_score_no_so[F16TH].avg,
                    elimstats.n_win_with_equal_score_no_so[F8TH].avg,
                    elimstats.n_win_with_equal_score_no_so[F4TH].avg,
                    elimstats.n_win_with_equal_score_no_so[FSEMI].avg,
-                   elimstats.n_win_with_equal_score_no_so[FGOLD].avg);
-        outp("| # avg wins with lower score|  %5.1lf |  %5.1lf |  %5.1lf |  %5.1lf |  %5.1lf |  %5.1lf |  %5.1lf |\n",
+                   elimstats.n_win_with_equal_score_no_so[FGOLD].avg,
+                   sum, 100.0*sum/104.0);
+        sum = (elimstats.n_win_with_lower_score[F48TH].avg +
+               elimstats.n_win_with_lower_score[F24TH].avg +
+               elimstats.n_win_with_lower_score[F16TH].avg +
+               elimstats.n_win_with_lower_score[F8TH].avg +
+               elimstats.n_win_with_lower_score[F4TH].avg +
+               elimstats.n_win_with_lower_score[FSEMI].avg +
+               elimstats.n_win_with_lower_score[FGOLD].avg );
+        outp("| # avg wins with lower score|  %7.2lf |  %7.2lf |  %7.2lf |  %7.2lf |  %7.2lf |  %7.2lf |  %7.2lf | %7.2lf %7.2lf%%  |\n",
                    elimstats.n_win_with_lower_score[F48TH].avg,
                    elimstats.n_win_with_lower_score[F24TH].avg,
                    elimstats.n_win_with_lower_score[F16TH].avg,
                    elimstats.n_win_with_lower_score[F8TH].avg,
                    elimstats.n_win_with_lower_score[F4TH].avg,
                    elimstats.n_win_with_lower_score[FSEMI].avg,
-                   elimstats.n_win_with_lower_score[FGOLD].avg);
+                   elimstats.n_win_with_lower_score[FGOLD].avg,
+                   100.0*sum/104.0);
     }
-    outp("| # avg expected wins        | %5.1lf%% | %5.1lf%% | %5.1lf%% | %5.1lf%% | %5.1lf%% | %5.1lf%% | %5.1lf%% |\n",
+    outp("| # avg expected wins        | %7.2lf%% | %7.2lf%% | %7.2lf%% | %7.2lf%% | %7.2lf%% | %7.2lf%% | %7.2lf%% | %7.2lf %7.2lf%%  |\n",
                100.0*elimstats.n_expected_wins[F48TH].avg/48.0,
                100.0*elimstats.n_expected_wins[F24TH].avg/24.0,
                100.0*elimstats.n_expected_wins[F16TH].avg/16.0,
@@ -1384,7 +1457,7 @@ void dumpEliminationStats() /*{{{2*/
                100.0*elimstats.n_expected_wins[F4TH].avg/4.0,
                100.0*elimstats.n_expected_wins[FSEMI].avg/2.0,
                100.0*elimstats.n_expected_wins[FGOLD].avg/2.0);
-    outp("=============================================================================================\n");
+    outp("===============================================================================================================================\n");
 
     outp("\nNumber of archers that qualified top  4, also ends in top  4 = %5.1lf\n", elimstats.n_top_q4_e4.avg);
     outp("Number of archers that qualified top  8, also ends in top  8 = %5.1lf\n", elimstats.n_top_q8_e8.avg);
@@ -1392,6 +1465,132 @@ void dumpEliminationStats() /*{{{2*/
 
     outp("\nAverage final ranking fit to theoretical ranking: %lf\n", elimstats.fc.avg);
     outp("                                        StdDev  : %lf\n\n", elimstats.fc.stdev);
+
+
+    }
+    else {
+
+    outp("%s;%s;%lf;%lf;%lf;%lf;%lf;%lf;%s\n",
+            getFormatName(&q_format), getFormatName(&e_format),
+            asl1, asl4, asl8, asl16, asl32, asl56, asl104, name_of_population);
+
+    outp("%ld;%ld;%ld;%ld;%ld;%ld;%ld;%ld\n",
+               elimstats.n_matches[F48TH],
+               elimstats.n_matches[F24TH],
+               elimstats.n_matches[F16TH],
+               elimstats.n_matches[F8TH],
+               elimstats.n_matches[F4TH],
+               elimstats.n_matches[FSEMI],
+               elimstats.n_matches[FGOLD],
+               104);
+    if (e_format.best_of > 0) {
+        for (i = 0; i < e_format.best_of; i++) {
+            sum = (elimstats.n_win_after_sets[i][F48TH].avg +
+                   elimstats.n_win_after_sets[i][F24TH].avg +
+                   elimstats.n_win_after_sets[i][F16TH].avg +
+                   elimstats.n_win_after_sets[i][F8TH].avg +
+                   elimstats.n_win_after_sets[i][F4TH].avg +
+                   elimstats.n_win_after_sets[i][FSEMI].avg +
+                   elimstats.n_win_after_sets[i][FGOLD].avg );
+            outp("%lf;%lf;%lf;%lf;%lf;%lf;%lf;%lf;%lf\n",
+                   i+1,
+                   elimstats.n_win_after_sets[i][F48TH].avg/48.0,
+                   elimstats.n_win_after_sets[i][F24TH].avg/24.0,
+                   elimstats.n_win_after_sets[i][F16TH].avg/16.0,
+                   elimstats.n_win_after_sets[i][F8TH].avg/8.0,
+                   elimstats.n_win_after_sets[i][F4TH].avg/4.0,
+                   elimstats.n_win_after_sets[i][FSEMI].avg/2.0,
+                   elimstats.n_win_after_sets[i][FGOLD].avg/2.0,
+                   sum, sum/104.0);
+        }
+    }
+    sum = (elimstats.n_win_after_shootoff[F48TH].avg +
+           elimstats.n_win_after_shootoff[F24TH].avg +
+           elimstats.n_win_after_shootoff[F16TH].avg +
+           elimstats.n_win_after_shootoff[F8TH].avg +
+           elimstats.n_win_after_shootoff[F4TH].avg +
+           elimstats.n_win_after_shootoff[FSEMI].avg +
+           elimstats.n_win_after_shootoff[FGOLD].avg );
+    outp("%lf;%lf;%lf;%lf;%lf;%lf;%lf;%lf;%lf\n",
+               elimstats.n_win_after_shootoff[F48TH].avg,
+               elimstats.n_win_after_shootoff[F24TH].avg,
+               elimstats.n_win_after_shootoff[F16TH].avg,
+               elimstats.n_win_after_shootoff[F8TH].avg,
+               elimstats.n_win_after_shootoff[F4TH].avg,
+               elimstats.n_win_after_shootoff[FSEMI].avg,
+               elimstats.n_win_after_shootoff[FGOLD].avg,
+               sum, sum/104.0);
+    sum = (elimstats.n_second_shootoff_required[F48TH].avg +
+           elimstats.n_second_shootoff_required[F24TH].avg +
+           elimstats.n_second_shootoff_required[F16TH].avg +
+           elimstats.n_second_shootoff_required[F8TH].avg +
+           elimstats.n_second_shootoff_required[F4TH].avg +
+           elimstats.n_second_shootoff_required[FSEMI].avg +
+           elimstats.n_second_shootoff_required[FGOLD].avg );
+    outp("%lf;%lf;%lf;%lf;%lf;%lf;%lf;%lf;%lf\n",
+               elimstats.n_second_shootoff_required[F48TH].avg,
+               elimstats.n_second_shootoff_required[F24TH].avg,
+               elimstats.n_second_shootoff_required[F16TH].avg,
+               elimstats.n_second_shootoff_required[F8TH].avg,
+               elimstats.n_second_shootoff_required[F4TH].avg,
+               elimstats.n_second_shootoff_required[FSEMI].avg,
+               elimstats.n_second_shootoff_required[FGOLD].avg,
+               sum, sum/104.0);
+    if (e_format.best_of > 0) {
+        sum = (elimstats.n_win_with_equal_score_no_so[F48TH].avg +
+               elimstats.n_win_with_equal_score_no_so[F24TH].avg +
+               elimstats.n_win_with_equal_score_no_so[F16TH].avg +
+               elimstats.n_win_with_equal_score_no_so[F8TH].avg +
+               elimstats.n_win_with_equal_score_no_so[F4TH].avg +
+               elimstats.n_win_with_equal_score_no_so[FSEMI].avg +
+               elimstats.n_win_with_equal_score_no_so[FGOLD].avg );
+        outp("%lf;%lf;%lf;%lf;%lf;%lf;%lf;%lf;%lf\n",
+                   elimstats.n_win_with_equal_score_no_so[F48TH].avg,
+                   elimstats.n_win_with_equal_score_no_so[F24TH].avg,
+                   elimstats.n_win_with_equal_score_no_so[F16TH].avg,
+                   elimstats.n_win_with_equal_score_no_so[F8TH].avg,
+                   elimstats.n_win_with_equal_score_no_so[F4TH].avg,
+                   elimstats.n_win_with_equal_score_no_so[FSEMI].avg,
+                   elimstats.n_win_with_equal_score_no_so[FGOLD].avg,
+                   sum, sum/104.0);
+        sum = (elimstats.n_win_with_lower_score[F48TH].avg +
+               elimstats.n_win_with_lower_score[F24TH].avg +
+               elimstats.n_win_with_lower_score[F16TH].avg +
+               elimstats.n_win_with_lower_score[F8TH].avg +
+               elimstats.n_win_with_lower_score[F4TH].avg +
+               elimstats.n_win_with_lower_score[FSEMI].avg +
+               elimstats.n_win_with_lower_score[FGOLD].avg );
+        outp("%lf;%lf;%lf;%lf;%lf;%lf;%lf;%lf;%lf\n",
+                   elimstats.n_win_with_lower_score[F48TH].avg,
+                   elimstats.n_win_with_lower_score[F24TH].avg,
+                   elimstats.n_win_with_lower_score[F16TH].avg,
+                   elimstats.n_win_with_lower_score[F8TH].avg,
+                   elimstats.n_win_with_lower_score[F4TH].avg,
+                   elimstats.n_win_with_lower_score[FSEMI].avg,
+                   elimstats.n_win_with_lower_score[FGOLD].avg,
+                   sum, sum/104.0);
+    }
+    sum = (elimstats.n_expected_wins[F48TH].avg +
+           elimstats.n_expected_wins[F24TH].avg +
+           elimstats.n_expected_wins[F16TH].avg +
+           elimstats.n_expected_wins[F8TH].avg +
+           elimstats.n_expected_wins[F4TH].avg +
+           elimstats.n_expected_wins[FSEMI].avg +
+           elimstats.n_expected_wins[FGOLD].avg );
+    outp("%lf;%lf;%lf;%lf;%lf;%lf;%lf;%lf;%lf\n",
+               elimstats.n_expected_wins[F48TH].avg/48.0,
+               elimstats.n_expected_wins[F24TH].avg/24.0,
+               elimstats.n_expected_wins[F16TH].avg/16.0,
+               elimstats.n_expected_wins[F8TH].avg/8.0,
+               elimstats.n_expected_wins[F4TH].avg/4.0,
+               elimstats.n_expected_wins[FSEMI].avg/2.0,
+               elimstats.n_expected_wins[FGOLD].avg/2.0,
+               sum, sum/104.0);
+
+    outp("%lf;%lf;%lf\n", elimstats.n_top_q4_e4.avg, elimstats.n_top_q8_e8.avg, elimstats.n_top_q16_e16.avg);
+
+    }
+
 } /*}}}2*/
 
 /* --- Local functions {{{1 */

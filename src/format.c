@@ -57,7 +57,7 @@ const char *getFormatName(const Format *format) /*{{{2*/
                  format->name);
     }
     else {
-        snprintf(buf, 1024, "%4.1lf;\"%s\";%s;\"%s\"",
+        snprintf(buf, 1024, "%4.1lf \"%s\" %s \"%s\"",
                  format->distance,
                  face->name,
                  getMatchTypeString(format),
@@ -77,7 +77,7 @@ static const char *getMatchTypeString(const Format *format) /*{{{2*/
             sprintf(buf, "Cumulative %d arrows", format->narrows);
         }
         else {
-            sprintf(buf, "C;%d;0", format->narrows);
+            sprintf(buf, "C %d 0", format->narrows);
         }
         break;
     case SETSYSTEM:
@@ -85,7 +85,7 @@ static const char *getMatchTypeString(const Format *format) /*{{{2*/
             sprintf(buf, "Set-system %d arrow sets, best of %d sets", format->narrows, format->best_of);
         }
         else {
-            sprintf(buf, "S;%d;%d", format->narrows, format->best_of);
+            sprintf(buf, "S %d %d", format->narrows, format->best_of);
         }
         break;
     case SHOOTOFF:
@@ -93,7 +93,7 @@ static const char *getMatchTypeString(const Format *format) /*{{{2*/
             sprintf(buf, "Single arrow shoot-off");
         }
         else {
-            sprintf(buf, "SO;1;0");
+            sprintf(buf, "SO 1 0");
         }
         break;
     case RANDOM:
@@ -101,7 +101,7 @@ static const char *getMatchTypeString(const Format *format) /*{{{2*/
             sprintf(buf, "Random");
         }
         else {
-            sprintf(buf, "R;0;0");
+            sprintf(buf, "R 0 0");
         }
         break;
     }

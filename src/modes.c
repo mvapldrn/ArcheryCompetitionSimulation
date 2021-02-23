@@ -46,7 +46,7 @@ void modeQualification(void) /*{{{2*/
     doQualificationRounds(q_nruns);
 
     dumpQualificationStats();
-#if 0
+#if 1
     dumpArcher(NULL); /* Force dump header */
     for (i = 0; i < 104; i++) {
         dumpArcher(archerrank[i]);
