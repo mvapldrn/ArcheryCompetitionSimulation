@@ -10,30 +10,32 @@
 
 #ifdef ASL_RM
 
-#define POPULATION_FROM "ASL distribution for Recurve Men"
+#define POPULATION_FROM "ASL distribution for Recurve Men (2019 World Championships 's Hertogenbosch)"
 #define ARROW_DIAMETER 5.0
-double asl1   = 118.0;
-double asl8   = 105.8;
-double asl16  = 101.9;
-double asl32  =  99.3;
-double asl56  =  95.0;
-double asl104 =  82.0;
+double asl1   = 117.0;
+double asl4   = 115.0;
+double asl8   = 110.6;
+double asl16  = 107.2;
+double asl32  = 105.0;
+double asl56  = 101.2;
+double asl104 =  94.5;
 
 #elif ASL_RW
 
-#define POPULATION_FROM "ASL distribution for Recurve Women"
+#define POPULATION_FROM "ASL distribution for Recurve Women (2019 World Championship 's Hertogenbosch)"
 #define ARROW_DIAMETER 5.0
-double asl1   = 108.0;
-double asl8   = 101.9;
-double asl16  =  97.1;
-double asl32  =  92.8;
-double asl56  =  89.2;
-double asl104 =  73.7;
+double asl1   = 114.5;
+double asl4   = 107.2;
+double asl8   = 104.1;
+double asl16  = 101.0;
+double asl32  =  98.0;
+double asl56  =  94.0;
+double asl104 =  85.2;
 
 #elif ASL_CM_INDOOR
 
 #define POPULATION_FROM "ASL distribution for Compound Men Indoor (from Nimes 2017)"
-#define ARROW_DIAMETER 9.3
+#define ARROW_DIAMETER 11.0
 double asl1   = 134.0;
 double asl4   = 128.5;
 double asl8   = 125.5;
