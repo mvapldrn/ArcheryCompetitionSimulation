@@ -36,20 +36,20 @@ extern int pretty_print;
 
 Format q_format = {
     "QFormat",
-    50.0,
-    WA_80CM_6RINGS,
+    70.0,
+    WA_122CM_10RINGS,
     72,
-    0,
-    CUMULATIVE
+    CUMULATIVE,
+    0
 };
 
 Format e_format = {
     "EFormat",
-    50.0,
-    WA_80CM_6RINGS,
-    15,
-    0,
-    CUMULATIVE
+    70.0,
+    WA_122CM_10RINGS,
+    3,
+    SETSYSTEM,
+    5
 };
 
 /* --- Local prototypes {{{1 */

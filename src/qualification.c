@@ -54,7 +54,7 @@ static void randomizeRange(int from, int to);
 
 void initQualificationStats(void) /*{{{2*/
 /*
- * Initialize (set zero) qualification statisttics
+ * Initialize (set zero) qualification statistics
  */
 {
     for (int i = 0; i < 104; i++) {
@@ -234,8 +234,7 @@ static double getQualificationRankCorrectness(void) /*{{{2*/
     for (i = 0; i < 104; i++) {
         f += (archer[i].lvl_rank - archer[i].q_rank) * (archer[i].lvl_rank - archer[i].q_rank);
     }
-    f = f/104.0;
-    return f;
+    return sqrt(f)/104.0;
 } /*}}}2*/
 
 static void createQualificationRanking(int signdec) /*{{{2*/

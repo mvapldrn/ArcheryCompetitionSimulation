@@ -37,6 +37,8 @@
 
 #include "debug.h"
 
+/* --- Global data {{{1*/
+
 extern int pretty_print;
 extern double start_asl;
 extern double end_asl;
@@ -52,6 +54,8 @@ extern double xt1asl1;
 extern double xt1asl2;
 extern double xt2asl1;
 extern double xt2asl2;
+
+extern QualificationStatistics qstats;
 
 EliminationStatistics elimstats;
 
@@ -88,7 +92,7 @@ static Result doMixedTeamShootOff(MixedTeam*, MixedTeam*, int, Counters*);
 static Result doMixedTeamRandomMatch(MixedTeam*, MixedTeam*, int, Counters*);
 static double getFinalRankingCorrectness(void);
 
-/* --- Global functions {{{1 */
+/* --- Implementation {{{1*/
 
 void initEliminationStats() /*{{{2*/
 {
@@ -1479,8 +1483,8 @@ void dumpEliminationStats() /*{{{2*/
     outp("Number of archers that qualified top  8, also ends in top  8 = %5.1lf\n", elimstats.n_top_q8_e8.avg);
     outp("Number of archers that qualified top 16, also ends in top 16 = %5.1lf\n", elimstats.n_top_q16_e16.avg);
 
-    outp("\nAverage final ranking fit to theoretical ranking: %lf\n", elimstats.fc.avg);
-    outp("                                        StdDev  : %lf\n\n", elimstats.fc.stdev);
+    outp("\nQualification ranking fit to theoretical ranking (lower is better): %lf\n", qstats.fc.avg);
+    outp("\nFinal ranking fit to theoretical ranking  (lower is better)       : %lf\n", elimstats.fc.avg);
 
 
     }
