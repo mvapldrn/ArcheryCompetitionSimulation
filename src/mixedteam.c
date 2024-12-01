@@ -23,7 +23,6 @@
 
 /* --- Includes {{{1 */
 #include <stdio.h>
-#include <math.h>
 
 #include "dump.h"
 #include "mixedteam.h"

@@ -27,7 +27,6 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <getopt.h>
-#include <math.h>
 #include <string.h>
 #include <time.h>
 
@@ -35,12 +34,9 @@
 #include "asl_distribution.h"
 #include "dump.h"
 #include "face.h"
-#include "score.h"
 #include "modes.h"
 #include "format.h"
 #include "archer.h"
-#include "team.h"
-#include "skilllevelscores.h"
 #include "qualification.h"
 #include "elimination.h"
 #include "interactive.h"

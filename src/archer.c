@@ -36,14 +36,6 @@
 Archer  archer[104];         /* Individual archer */
 Archer *archerrank[104];     /* Points to archer ranked idx+1 */
 
-double asl1;
-double asl4;
-double asl8;
-double asl16;
-double asl32;
-double asl56;
-double asl104;
-
 int high_loser = 16;
 int cut_high_loser = 16;
 
@@ -138,7 +130,7 @@ void dumpArcher(const Archer *archer) /*{{{2*/
 
     if (pretty_print) {
         /*    |        XXX         | + |       XXX        |       XXX.XX        |        XXXX.X             |      XXXX.X     | XX.XXX(XX.X%)  | */
-        outp("|        %3d(%3d)    | %c |       %3d        |       %6.2lf        |        %6.1lf             |      %6.1lf     | %6.3lf(%4.1lf%%)  |\n",
+        outp("|        %3d(%3d)    | %c |       %3d        |       %6.2lf        |        %6.1lf             |      %6.1lf     | %6.3lf(%4.1lf%%) |\n",
                archer->q_rank, archer->lvl_rank,
                winSymbol(archer),
                archer->e_rank, archer->lvl, archer->lvl_score, archer->q_score_stat.avg, archer->q_score_stat.stdev,

@@ -23,7 +23,6 @@
 
 
 /* --- Includes {{{1 */
-#include <stdlib.h>
 #include <float.h>
 #include <math.h>
 

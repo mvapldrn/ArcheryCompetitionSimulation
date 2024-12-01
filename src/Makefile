@@ -22,26 +22,30 @@
 #**************************************************************************/
 
 # When using the GNU Scientific Library, set -DWITH_GSL and link with the libgsl.a
-# For preset/non-interactive populations, choose from
-# 
-# ASL_RM  		= Performance distribution for Recurve Men (2019 World Championships 's Hertogenbosch)
-# ASL_RW  		= Performance distribution for Recurve Women (2019 World Championship 's Hertogenbosch)
-# ASL_CM_INDOOR 	= Performance distribution for Compound Men Indoor (from Nimes 2017)
-# ASL_CM_OUTDOOR 	= Performance distribution for Compound Men Outdoor (2019 World Championships 's Hertogenbosch)
-# ASL_CW_INDOOR 	= Performance distribution for Compound Women Indoor (from Nimes 2017)
+# For preset/non-interactive populations, choose from performance distributions in Makefile
+#
+# ASL_RM_70M_WC2019     = Performance Recurve Men (2019 World Championships 's Hertogenbosch)
+# ASL_RW_70M_WC2019     = Performance Recurve Women (2019 World Championship 's Hertogenbosch)
+#
+# ASL_CM_50M_WC2019     = Performance Compound Men Outdoor (2019 World Championships 's Hertogenbosch)
+# ASL_CM_50M_WCUP2023_4 = Performance Compound Women Indoor (from Worldcup 2023 Paris)
+# ASL_CW_50M_WCUP2023_4 = Performance Compound Women Indoor (from Worldcup 2023 Paris)
+#
+# ASL_CM_18M_NIMES2017  = Performance Compound Men Indoor (from Nimes 2017)
+# ASL_CW_18M_NIMES2017  = Performance Compound Women Indoor (from Nimes 2017)
 #
 # Or use --interactive to choose own performance distribution
-DEFINES		= -DWITH_GSL -DASL_RM
+DEFINES     = -DWITH_GSL -DASL_CM_50M_WCUP2023_4
 
-OPTIONS		= -O2 -Wno-unused-result
-#OPTIONS		= -g
-CFLAGS		= $(OPTIONS) $(DEFINES)
-LDFLAGS		= -static
-LIBS		= -lgsl -lgslcblas -lm
-CC		= gcc
-SOURCES		= $(wildcard *.c)
-OBJECTS 	= $(patsubst %.c, %.o, $(SOURCES))
-EXECUTABLE 	= ../bin/archerystats
+OPTIONS     = -O2 -Wno-unused-result
+#OPTIONS     = -g
+CFLAGS      = $(OPTIONS) $(DEFINES)
+LDFLAGS     = -static
+LIBS        = -lgsl -lgslcblas -lm
+CC          = gcc
+SOURCES     = $(wildcard *.c)
+OBJECTS     = $(patsubst %.c, %.o, $(SOURCES))
+EXECUTABLE  = ../bin/archerystats
 
 all: build $(EXECUTABLE)
 

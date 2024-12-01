@@ -162,4 +162,16 @@ Generic options
 --pretty-print                     Pretty print the results (default is CSV print of results)
 
 --help                             This help file
+
+
+
+# Installation
+
+ $ cd src
+ $ make
+
+Needs gsllib-dev for true randomization
+
+ $  sudo apt install gsllib-dev
+
 ```

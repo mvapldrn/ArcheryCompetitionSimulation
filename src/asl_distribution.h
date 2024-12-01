@@ -24,7 +24,7 @@
 #ifndef _ASL_DISTRIBUTION_H
 #define _ASL_DISTRIBUTION_H
 
-#ifdef ASL_RM
+#ifdef ASL_RM_70M_WC2019
 
 #define POPULATION_FROM "ASL distribution for Recurve Men (2019 World Championships 's Hertogenbosch)"
 #define ARROW_DIAMETER 5.0
@@ -36,7 +36,7 @@ double asl32  = 105.0;
 double asl56  = 101.2;
 double asl104 =  94.5;
 
-#elif ASL_RW
+#elif ASL_RW_70M_WC2019
 
 #define POPULATION_FROM "ASL distribution for Recurve Women (2019 World Championship 's Hertogenbosch)"
 #define ARROW_DIAMETER 5.0
@@ -48,19 +48,7 @@ double asl32  =  98.0;
 double asl56  =  94.0;
 double asl104 =  85.2;
 
-#elif ASL_CM_INDOOR
-
-#define POPULATION_FROM "ASL distribution for Compound Men Indoor (from Nimes 2017)"
-#define ARROW_DIAMETER 11.0
-double asl1   = 134.0;
-double asl4   = 128.5;
-double asl8   = 125.5;
-double asl16  = 124.0;
-double asl32  = 121.5;
-double asl56  = 117.0;
-double asl104 = 110.5;
-
-#elif ASL_CM_OUTDOOR
+#elif ASL_CM_50M_WC2019
 
 #define POPULATION_FROM "ASL distribution for Compound Men Outdoor (2019 World Championships 's Hertogenbosch)"
 #define ARROW_DIAMETER 4.5
@@ -72,7 +60,43 @@ double asl32  = 120.0;
 double asl56  = 116.8;
 double asl104 = 109.0;
 
-#elif ASL_CW_INDOOR
+#elif ASL_CM_50M_WCUP2023_4
+
+#define POPULATION_FROM "ASL distribution for Compound Men Worldcup outdoor 2023 Paris"
+#define ARROW_DIAMETER 4.5
+double asl1   = 129.7;
+double asl4   = 129.6;
+double asl8   = 127.8;
+double asl16  = 125.0;
+double asl32  = 120.5;
+double asl56  = 115.0;
+double asl104 = 100.0;
+
+#elif ASL_CW_50M_WCUP2023_4
+
+#define POPULATION_FROM "ASL distribution for Compound Women Worldcup outdoor 2023 Paris"
+#define ARROW_DIAMETER 4.5
+double asl1   = 126.7;
+double asl4   = 125.0;
+double asl8   = 121.1;
+double asl16  = 119.0;
+double asl32  = 114.1;
+double asl56  = 102.3;
+double asl104 = 100.0;
+
+#elif ASL_CM_18M_NIMES2017
+
+#define POPULATION_FROM "ASL distribution for Compound Men Indoor (from Nimes 2017)"
+#define ARROW_DIAMETER 9.3
+double asl1   = 134.0;
+double asl4   = 128.5;
+double asl8   = 125.5;
+double asl16  = 124.0;
+double asl32  = 121.5;
+double asl56  = 117.0;
+double asl104 = 110.5;
+
+#elif ASL_CW_18M_NIMES2017
 
 #define POPULATION_FROM "ASL distribution for Compound Women Indoor (from Nimes 2017)"
 #define ARROW_DIAMETER 9.3
