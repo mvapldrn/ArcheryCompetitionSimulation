@@ -49,6 +49,7 @@ Result mixedTeamShootoffCompare(const MixedTeam *left, double left_d[2], const M
 double getScore(double lvl, const Face *face, double dist, int n_arrows);
 double getArrowValue(double lvl, const Face *face, double dist);
 double getArrowPosition(double lvl, double dist);
+int isArrowInRing(double d_from_center, const Face *face, int ring);
 double getScoreBySkillLevel(double lvl, const Face *face, double dist, int n_arrows);
 
 #endif

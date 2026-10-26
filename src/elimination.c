@@ -2039,8 +2039,8 @@ static Result doShootOff(const Face *face, Archer *me, Archer *opponent, int sta
         if ( (face->ring_for_2nd_so >= 0)  &&
              (attempt == 1)                   )
         {
-            if ( (my_d <= face->radius[face->ring_for_2nd_so]) &&
-                 (opponent_d <= face->radius[face->ring_for_2nd_so]) )
+            if ( isArrowInRing(my_d, face, face->ring_for_2nd_so) &&
+                 isArrowInRing(opponent_d, face, face->ring_for_2nd_so) )
             {
                 /* Both in same ring, retry shootoff */
                 counters->n_second_shootoff_required[stage]++;
