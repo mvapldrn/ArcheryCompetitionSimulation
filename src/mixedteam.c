@@ -76,11 +76,11 @@ void setMixedTeams(double lvl_1[2], double lvl_4[2], double lvl_8[2], double lvl
     }
 
     /* team 5..8 */
-    dlvl[0] = (lvl_4[0]-lvl_8[0])/3.0;
-    dlvl[1] = (lvl_4[1]-lvl_8[1])/3.0;
+    dlvl[0] = (lvl_4[0]-lvl_8[0])/4.0;
+    dlvl[1] = (lvl_4[1]-lvl_8[1])/4.0;
     for (i = 4; i < 8; i++) {
-        lvl[0] = lvl_4[0] - (i-4)*dlvl[0];
-        lvl[1] = lvl_4[1] - (i-4)*dlvl[1];
+        lvl[0] = lvl_4[0] - (i-3)*dlvl[0];
+        lvl[1] = lvl_4[1] - (i-3)*dlvl[1];
         setMixedTeam(&mixedteam[i], lvl);
     }
 
@@ -88,8 +88,8 @@ void setMixedTeams(double lvl_1[2], double lvl_4[2], double lvl_8[2], double lvl
     dlvl[0] = (lvl_8[0]-lvl_16[0])/8.0;
     dlvl[1] = (lvl_8[1]-lvl_16[1])/8.0;
     for (i = 8; i < 16; i++) {
-        lvl[0] = lvl_8[0] - (i-8)*dlvl[0];
-        lvl[1] = lvl_8[1] - (i-8)*dlvl[1];
+        lvl[0] = lvl_8[0] - (i-7)*dlvl[0];
+        lvl[1] = lvl_8[1] - (i-7)*dlvl[1];
         setMixedTeam(&mixedteam[i], lvl);
     }
 
@@ -97,8 +97,8 @@ void setMixedTeams(double lvl_1[2], double lvl_4[2], double lvl_8[2], double lvl
     dlvl[0] = (lvl_16[0]-lvl_24[0])/8.0;
     dlvl[1] = (lvl_16[1]-lvl_24[1])/8.0;
     for (i = 16; i < 24; i++) {
-        lvl[0] = lvl_8[0] - (i-16)*dlvl[0];
-        lvl[1] = lvl_8[1] - (i-16)*dlvl[1];
+        lvl[0] = lvl_16[0] - (i-15)*dlvl[0];
+        lvl[1] = lvl_16[1] - (i-15)*dlvl[1];
         setMixedTeam(&mixedteam[i], lvl);
     }
 } /*}}}2*/
@@ -127,12 +127,12 @@ void dumpMixedTeam(const MixedTeam *mixedteam) /*{{{2*/
     }
 
     if (pretty_print) {
-        outp("|   %3d  | %s |   %3d  |  %8.2lf (%6.1lf, %6.1lf) |\n",
+        outp("|   %3d  | %c |   %3d  |  %8.2lf (%6.1lf, %6.1lf) |\n",
                 mixedteam->q_rank, ' ', mixedteam->e_rank, getMixedTeamScore(mixedteam),
                 mixedteam->archer[0].q_score, mixedteam->archer[1].q_score);
     }
     else {
-        outp("%d;\"%s\";%d;%lf;%lf;%lf\n",
+        outp("%d;\"%c\";%d;%lf;%lf;%lf\n",
                mixedteam->q_rank, ' ', mixedteam->e_rank, getMixedTeamScore(mixedteam),
                mixedteam->archer[0].q_score, mixedteam->archer[1].q_score);
     }

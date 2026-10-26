@@ -113,12 +113,12 @@ void dumpTeam(const Team *team) /*{{{2*/
     }
 
     if (pretty_print) {
-        outp("|   %3d  | %s |   %3d  |  %8.2lf (%6.1lf, %6.1lf, %6.1lf) |\n",
+        outp("|   %3d  | %c |   %3d  |  %8.2lf (%6.1lf, %6.1lf, %6.1lf) |\n",
                 team->q_rank, ' ', team->e_rank, getTeamScore(team),
                 team->archer[0].q_score, team->archer[1].q_score, team->archer[2].q_score);
     }
     else {
-        outp("%d;\"%s\";%d;%lf;%lf;%lf;%lf\n",
+        outp("%d;\"%c\";%d;%lf;%lf;%lf;%lf\n",
                team->q_rank, ' ', team->e_rank, getTeamScore(team),
                team->archer[0].q_score, team->archer[1].q_score, team->archer[2].q_score);
     }

@@ -28,6 +28,7 @@
 #include "qualification.h"
 
 #include "debug.h"
+#include "random.h"
 #include "dump.h"
 #include "mixedteam.h"
 #include "team.h"
@@ -177,8 +178,8 @@ void doMixedTeamQualificationRound(void) /*{{{2*/
 
     for (i = 0; i < 24; i++) {
         /* Simulate Q round */
-        mixedteam[i].archer[0].q_score = getScore(team[i].archer[0].lvl, face, dist, narrows);
-        mixedteam[i].archer[1].q_score = getScore(team[i].archer[1].lvl, face, dist, narrows);
+        mixedteam[i].archer[0].q_score = getScore(mixedteam[i].archer[0].lvl, face, dist, narrows);
+        mixedteam[i].archer[1].q_score = getScore(mixedteam[i].archer[1].lvl, face, dist, narrows);
     }
 
     for (i = 0; i < 24; i++) {
@@ -198,7 +199,7 @@ void dumpQualificationStats(void) /*{{{2*/
         outp("========================\n");
         outp("Population: %s\n", name_of_population);
         outp("Format    : %s\n", getFormatName(&q_format));
-        outp("Runs      : %ld\n\n", q_nruns);
+        outp("Runs      : %d\n\n", q_nruns);
         outp("Results\n");
         outp("Average number of ties : %5.2lf\n", qstats.n_ties.avg);
         outp("                StdDev : %5.2lf\n", qstats.n_ties.stdev);
@@ -206,7 +207,7 @@ void dumpQualificationStats(void) /*{{{2*/
         outp("                StdDev : %lf\n\n", qstats.fc.stdev);
     }
     else {
-        outp("\"%s\";%s;%lf;%lf;%lf;%lf;%ld\n",
+        outp("\"%s\";%s;%lf;%lf;%lf;%lf;%d\n",
                 name_of_population,
                 getFormatName(&q_format), qstats.n_ties.avg, qstats.n_ties.stdev, qstats.fc.avg, qstats.fc.stdev,q_nruns);
     }
@@ -245,7 +246,7 @@ static void createQualificationRanking(int signdec) /*{{{2*/
  */
 {
     int i, j;
-    double sc1, sc2;
+    double sc1;
 
 #ifdef DEBUG
     dumpArcher(NULL);
@@ -288,10 +289,10 @@ static void createQualificationRanking(int signdec) /*{{{2*/
         D("Scan for ties from %d\n", i);
         sc1 = archerrank[i]->q_score;
         j = 0;
-        do {
+        while ((i+j<103) && isTied(signdec, sc1, archerrank[i+j+1]->q_score)) {
             j++;
-            sc2 = archerrank[i+j]->q_score;
-        } while ((i+j<103) && isTied(signdec, sc1, sc2));
+        }
+        j++;
         if (j >= 2) {
             /* 2-way or more */
             D("Found a %d-way tie\n", j);
@@ -345,7 +346,7 @@ static void randomizeRange(int from, int to) /*{{{2*/
     D("Solving a %d-way tie\n", n+1);
 
     /* Randomize a number between 0 and n, pick that one to go on top and repeat */
-    int pick = (int)round((1.0 * n * (1.0 * rand() / RAND_MAX) )); /* 0 <= pick <= n */
+    int pick = getUniformInt(n+1); /* 0 <= pick <= n */
 
     if (pick > 0) {
         /* swap */

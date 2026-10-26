@@ -77,33 +77,33 @@ void setArchers(void) /*{{{2*/
     }
 
     /* 5..8 */
-    dlvl = (asl4-asl8)/3.0;
+    dlvl = (asl4-asl8)/4.0;
     for (i = 5; i <= 8; i++) {
-        setArcher(&(archer[i-1]), i, asl4 - (i-5)*dlvl);
+        setArcher(&(archer[i-1]), i, asl4 - (i-4)*dlvl);
     }
 
     /* 9..16 */
-    dlvl = (asl8-asl16)/7.0;
+    dlvl = (asl8-asl16)/8.0;
     for (i = 9; i <= 16; i++) {
-        setArcher(&(archer[i-1]), i, asl8 - (i-9)*dlvl);
+        setArcher(&(archer[i-1]), i, asl8 - (i-8)*dlvl);
     }
 
     /* 17..32 */
-    dlvl = (asl16-asl32)/15.0;
+    dlvl = (asl16-asl32)/16.0;
     for(i = 17; i <= 32; i++) {
-        setArcher(&(archer[i-1]), i, asl16 - (i-17)*dlvl);
+        setArcher(&(archer[i-1]), i, asl16 - (i-16)*dlvl);
     }
 
-    /* 32..56 */
-    dlvl = (asl32-asl56)/23.0;
+    /* 33..56 */
+    dlvl = (asl32-asl56)/24.0;
     for(i = 33; i <= 56; i++) {
-        setArcher(&(archer[i-1]), i, asl32 - (i-33)*dlvl);
+        setArcher(&(archer[i-1]), i, asl32 - (i-32)*dlvl);
     }
 
-    /* 56..104 */
-    dlvl = (asl56-asl104)/47.0;
+    /* 57..104 */
+    dlvl = (asl56-asl104)/48.0;
     for(i = 57; i <= 104; i++) {
-        setArcher(&(archer[i-1]), i, asl56 - (i-57)*dlvl);
+        setArcher(&(archer[i-1]), i, asl56 - (i-56)*dlvl);
     }
 
     for (i = 0; i < 104; i++) {
@@ -134,7 +134,7 @@ void dumpArcher(const Archer *archer) /*{{{2*/
                archer->q_rank, archer->lvl_rank,
                winSymbol(archer),
                archer->e_rank, archer->lvl, archer->lvl_score, archer->q_score_stat.avg, archer->q_score_stat.stdev,
-               100.0*(sqrt(archer->q_score_stat.stdev)/(archer->q_score_stat.avg)));
+               100.0*(archer->q_score_stat.stdev/archer->q_score_stat.avg));
     }
     else {
         outp("%d;%d;\"%c\";%d;%lf;%lf;%lf;%lf\n",

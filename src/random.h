@@ -33,6 +33,7 @@
 
 void initRandomGenerator(void);
 double getGaussianRandom(double stddev);
+int getUniformInt(int n);
 
 #endif
 
