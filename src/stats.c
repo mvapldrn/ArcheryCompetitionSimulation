@@ -38,6 +38,7 @@
 void resetStat(Stat *stat) /*{{{2*/
 {
     stat->n     = 0;
+    stat->val   = 0.0;
     stat->avg   = 0.0;
     stat->var   = 0.0;
     stat->stdev = 0.0;
@@ -54,8 +55,9 @@ void addStat(Stat *stat, double value) /*{{{2*/
     }
     else {
         /* Subsequent entries */
-        stat->avg   = stat->avg + (value - stat->avg) / stat->n;
-        stat->var   = stat->var + (value - stat->avg) * (value - stat->avg);
+        double prev_avg = stat->avg;
+        stat->avg   = stat->avg + (value - prev_avg) / stat->n;
+        stat->var   = stat->var + (value - prev_avg) * (value - stat->avg);
     }
     stat->stdev = sqrt(stat->var/stat->n);
 } /*}}}2*/

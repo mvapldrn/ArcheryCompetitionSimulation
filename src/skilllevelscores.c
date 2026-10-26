@@ -92,7 +92,7 @@ void ASLSimulation(void) /*{{{2*/
             outp("|     %6.2lf          |  %6.1lf  | %6.3lf |\n", asl, mean, stddev);
         }
         else {
-            outp("%lf;%lf;%lf;%lf;%lf\n",
+            outp("%lf;%lf;%lf;%lf\n",
                     asl,
                     getScoreBySkillLevel(asl, face, dist, narrows),
                     mean,

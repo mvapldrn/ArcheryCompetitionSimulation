@@ -22,7 +22,9 @@
 *****************************************************************************/
 
 /* --- Includes {{{1 */
+#include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 #include <float.h>
 #include <math.h>
 
@@ -74,6 +76,24 @@ double getGaussianRandom(double stddev) /*{{{2*/
     return gsl_ran_gaussian_ziggurat(gslr, stddev);
 #else
     return getGaussianBoxMullerRandom(0.0, stddev);
+#endif
+} /*}}}2*/
+
+int getUniformInt(int n) /*{{{2*/
+/*
+ * Return a uniformly distributed random integer in the range [0, n)
+ */
+{
+#ifdef WITH_GSL
+    return (int)gsl_rng_uniform_int(gslr, (unsigned long)n);
+#else
+    /* Rejection sampling to avoid modulo bias */
+    int limit = RAND_MAX - (RAND_MAX % n);
+    int r;
+    do {
+        r = rand();
+    } while (r >= limit);
+    return r % n;
 #endif
 } /*}}}2*/
 

@@ -34,6 +34,7 @@
 #include "elimination.h"
 #include "qualification.h"
 #include "format.h"
+#include "random.h"
 
 #include "debug.h"
 
@@ -108,7 +109,13 @@ void initEliminationStats() /*{{{2*/
         resetStat(&(elimstats.n_win_after_shootoff[s]));
         resetStat(&(elimstats.n_win_with_lower_score[s]));
         resetStat(&(elimstats.n_win_with_equal_score_no_so[s]));
+        resetStat(&(elimstats.n_expected_wins[s]));
+        resetStat(&(elimstats.n_second_shootoff_required[s]));
     }
+    resetStat(&(elimstats.n_top_q4_e4));
+    resetStat(&(elimstats.n_top_q8_e8));
+    resetStat(&(elimstats.n_top_q16_e16));
+    resetStat(&(elimstats.fc));
 } /*}}}2*/
 
 void doEliminationRound(void) /*{{{2*/
@@ -1268,7 +1275,7 @@ Result doMatch(const Face *face, Archer *left, Archer *right, int stage, Counter
         result = doRandomMatch(left, right, stage, counters);
         break;
     default:
-        outp("ERROR: doMatch()?\n");
+        fatal("doMatch()?");
         break;
     }
 
@@ -1308,7 +1315,7 @@ Result doTeamMatch(Team *left, Team *right, int stage, Counters *counters) /*{{{
         result = doTeamRandomMatch(left, right, stage, counters);
         break;
     default:
-        outp("ERROR: doTeamMatch()?\n");
+        fatal("doTeamMatch()?");
         break;
     }
 
@@ -1348,7 +1355,7 @@ Result doMixedTeamMatch(MixedTeam *left, MixedTeam *right, int stage, Counters *
         result = doMixedTeamRandomMatch(left, right, stage, counters);
         break;
     default:
-        outp("ERROR: doMixedTeamMatch()?\n");
+        fatal("doMixedTeamMatch()?");
         break;
     }
 
@@ -1365,7 +1372,7 @@ void dumpEliminationStats() /*{{{2*/
 
     outp("Qualification: %s\n", getFormatName(&q_format));
     outp("Elimination  : %s\n", getFormatName(&e_format));
-    outp("Skill level distribution: %5.1lf %5.1lf %5.1lf %5.1lf %5.1lf %5.1lf (%s)\n",
+    outp("Skill level distribution: %5.1lf %5.1lf %5.1lf %5.1lf %5.1lf %5.1lf %5.1lf (%s)\n",
             asl1, asl4, asl8, asl16, asl32, asl56, asl104, name_of_population);
 
     outp("\n           Elimination round statistics\n");
@@ -1381,7 +1388,7 @@ void dumpEliminationStats() /*{{{2*/
                elimstats.n_matches[F4TH],
                elimstats.n_matches[FSEMI],
                elimstats.n_matches[FGOLD],
-               104);
+               104L);
     if (e_format.best_of > 0) {
         for (i = 0; i < e_format.best_of; i++) {
             sum = (elimstats.n_win_after_sets[i][F48TH].avg +
@@ -1467,8 +1474,15 @@ void dumpEliminationStats() /*{{{2*/
                    elimstats.n_win_with_lower_score[F4TH].avg,
                    elimstats.n_win_with_lower_score[FSEMI].avg,
                    elimstats.n_win_with_lower_score[FGOLD].avg,
-                   100.0*sum/104.0);
+                   sum, 100.0*sum/104.0);
     }
+    sum = (elimstats.n_expected_wins[F48TH].avg +
+           elimstats.n_expected_wins[F24TH].avg +
+           elimstats.n_expected_wins[F16TH].avg +
+           elimstats.n_expected_wins[F8TH].avg +
+           elimstats.n_expected_wins[F4TH].avg +
+           elimstats.n_expected_wins[FSEMI].avg +
+           elimstats.n_expected_wins[FGOLD].avg );
     outp("| # avg expected wins        | %7.2lf%% | %7.2lf%% | %7.2lf%% | %7.2lf%% | %7.2lf%% | %7.2lf%% | %7.2lf%% | %7.2lf %7.2lf%%  |\n",
                100.0*elimstats.n_expected_wins[F48TH].avg/48.0,
                100.0*elimstats.n_expected_wins[F24TH].avg/24.0,
@@ -1476,7 +1490,8 @@ void dumpEliminationStats() /*{{{2*/
                100.0*elimstats.n_expected_wins[F8TH].avg/8.0,
                100.0*elimstats.n_expected_wins[F4TH].avg/4.0,
                100.0*elimstats.n_expected_wins[FSEMI].avg/2.0,
-               100.0*elimstats.n_expected_wins[FGOLD].avg/2.0);
+               100.0*elimstats.n_expected_wins[FGOLD].avg/2.0,
+               sum, 100.0*sum/104.0);
     outp("===============================================================================================================================\n");
 
     outp("\nNumber of archers that qualified top  4, also ends in top  4 = %5.1lf\n", elimstats.n_top_q4_e4.avg);
@@ -1490,7 +1505,7 @@ void dumpEliminationStats() /*{{{2*/
     }
     else {
 
-    outp("%s;%s;%lf;%lf;%lf;%lf;%lf;%lf;%s\n",
+    outp("%s;%s;%lf;%lf;%lf;%lf;%lf;%lf;%lf;%s\n",
             getFormatName(&q_format), getFormatName(&e_format),
             asl1, asl4, asl8, asl16, asl32, asl56, asl104, name_of_population);
 
@@ -1502,7 +1517,7 @@ void dumpEliminationStats() /*{{{2*/
                elimstats.n_matches[F4TH],
                elimstats.n_matches[FSEMI],
                elimstats.n_matches[FGOLD],
-               104);
+               104L);
     if (e_format.best_of > 0) {
         for (i = 0; i < e_format.best_of; i++) {
             sum = (elimstats.n_win_after_sets[i][F48TH].avg +
@@ -1512,7 +1527,7 @@ void dumpEliminationStats() /*{{{2*/
                    elimstats.n_win_after_sets[i][F4TH].avg +
                    elimstats.n_win_after_sets[i][FSEMI].avg +
                    elimstats.n_win_after_sets[i][FGOLD].avg );
-            outp("%lf;%lf;%lf;%lf;%lf;%lf;%lf;%lf;%lf\n",
+            outp("%d;%lf;%lf;%lf;%lf;%lf;%lf;%lf;%lf;%lf\n",
                    i+1,
                    elimstats.n_win_after_sets[i][F48TH].avg/48.0,
                    elimstats.n_win_after_sets[i][F24TH].avg/24.0,
@@ -2122,7 +2137,7 @@ static Result doRandomMatch(Archer *me, Archer *opponent, int stage, Counters *c
  * Returns 1 for my win!
  */
 {
-    return rand()>RAND_MAX/2?LEFT_WINS:RIGHT_WINS;
+    return getUniformInt(2)?LEFT_WINS:RIGHT_WINS;
 } /*}}}2*/
 
 static Result doTeamRandomMatch(Team *left, Team *right, int stage, Counters *counters) /*{{{2*/
@@ -2131,7 +2146,7 @@ static Result doTeamRandomMatch(Team *left, Team *right, int stage, Counters *co
  * Returns 1 for left team wins!
  */
 {
-    return rand()>RAND_MAX/2?LEFT_WINS:RIGHT_WINS;
+    return getUniformInt(2)?LEFT_WINS:RIGHT_WINS;
 } /*}}}2*/
 
 static Result doMixedTeamRandomMatch(MixedTeam *left, MixedTeam *right, int stage, Counters *counters) /*{{{2*/
@@ -2140,7 +2155,7 @@ static Result doMixedTeamRandomMatch(MixedTeam *left, MixedTeam *right, int stag
  * Returns 1 for left mixed team wins!
  */
 {
-    return rand()>RAND_MAX/2?LEFT_WINS:RIGHT_WINS;
+    return getUniformInt(2)?LEFT_WINS:RIGHT_WINS;
 } /*}}}2*/
 
 static double getFinalRankingCorrectness(void) /*{{{2*/

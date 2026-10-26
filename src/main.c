@@ -144,8 +144,6 @@ int main(int argc, char *argv[]) /*{{{2*/
         { "progress",                  no_argument,       NULL, 1402 },
 
 
-        { "arrow-diameter",            required_argument, NULL, 999 },
-
         {0,0,0,0}
     };
 
@@ -184,14 +182,14 @@ int main(int argc, char *argv[]) /*{{{2*/
         case 1106: q_format.best_of = e_format.best_of = atoi(optarg); break;
 
         case 1107:
-            strcpy(q_format.name, optarg);
-            strcpy(e_format.name, optarg);
+            snprintf(q_format.name, FORMAT_NAME_LEN, "%s", optarg);
+            snprintf(e_format.name, FORMAT_NAME_LEN, "%s", optarg);
             break;
         case 1117:
-            strcpy(q_format.name, optarg);
+            snprintf(q_format.name, FORMAT_NAME_LEN, "%s", optarg);
             break;
         case 1127:
-            strcpy(e_format.name, optarg);
+            snprintf(e_format.name, FORMAT_NAME_LEN, "%s", optarg);
             break;
 
         case 1108: q_format.type = e_format.type = atoi(optarg); break;
@@ -235,8 +233,12 @@ int main(int argc, char *argv[]) /*{{{2*/
             help();
             return 0;
 
-        case 999: arrow_diameter = atof(optarg); break;
         }
+    }
+
+    if (q_format.facetype < 0 || q_format.facetype >= N_FACES ||
+        e_format.facetype < 0 || e_format.facetype >= N_FACES) {
+        fatal("Invalid --target-face code (see --help)");
     }
 
     initRandomGenerator();
