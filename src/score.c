@@ -289,6 +289,17 @@ double getArrowPosition(double lvl, double dist) /*{{{2*/
     return d_from_center;
 } /*}}}2*/
 
+int isArrowInRing(double d_from_center, const Face *face, int ring) /*{{{2*/
+/*
+ * Returns 1 if an arrow at d_from_center (mm, arrow centerline to center of face)
+ * scores in ring <ring> (or any ring inside it), i.e. the arrow shaft touches or
+ * is inside the ring's outer line. Same rule as used for scoring an arrow.
+ */
+{
+    double touching_radius = d_from_center - arrow_diameter/2.0;
+    return (touching_radius <= face->radius[ring]) ? 1 : 0;
+} /*}}}2*/
+
 double getScoreBySkillLevel(double lvl, const Face *face, double dist, int n_arrows) /*{{{2*/
 /*
  * Returns the expected score (rounded to a valid value) for an archer based on the
@@ -315,11 +326,10 @@ static double getArrowValueFromPosition(double d_from_center, const Face *face) 
  * face = Target face shot on
  */
 {
-    double touching_radius = d_from_center - arrow_diameter/2.0;
     int i = face->n_rings;
     while (i > 0) {
         i--;
-        if ( touching_radius <= face->radius[i]) {
+        if (isArrowInRing(d_from_center, face, i)) {
             return face->value[i];
         }
     }
